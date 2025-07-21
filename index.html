@@ -1,24 +1,69 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LUKE JUALAN - Item Game</title>
   <style>
+    :root {
+      --bg-light: #F2F8F0;
+      --bg-dark: #1a1a1a;
+      --text-light: #333;
+      --text-dark: #f5f5f5;
+      --item-bg-light: #fff;
+      --item-bg-dark: #2c2c2c;
+      --item-border-light: #CDEAC0;
+      --item-border-dark: #444;
+      --button-light: #69A17A;
+      --button-dark: #86cba7;
+      --button-hover: #4E7D5D;
+    }
+
+    html[data-theme="dark"] {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    html[data-theme="dark"] .item {
+      background-color: var(--item-bg-dark);
+      color: var(--text-dark);
+      border-color: var(--item-border-dark);
+    }
+
+    html[data-theme="dark"] .channel-button {
+      background-color: #444;
+      color: #fff;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #F2F8F0; /* Soft Matcha background */
-      color: #333333; /* Teks utama */
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     header {
-      background-color: #79B473; /* Matcha green */
+      background-color: #79B473;
       color: white;
       padding: 1rem;
       text-align: center;
       font-size: 1.5rem;
       font-weight: bold;
+      position: relative;
+    }
+
+    .toggle-mode {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      background: #fff;
+      color: #333;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
     }
 
     .container {
@@ -28,8 +73,8 @@
     }
 
     .item {
-      background-color: #FFFFFF;
-      border: 2px solid #CDEAC0;
+      background-color: var(--item-bg-light);
+      border: 2px solid var(--item-border-light);
       padding: 1rem;
       border-radius: 12px;
       margin-bottom: 1rem;
@@ -37,7 +82,6 @@
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      color: #333333;
     }
 
     .item .info {
@@ -63,14 +107,18 @@
       font-weight: bold;
       border: none;
       border-radius: 8px;
-      background-color: #69A17A;
+      background-color: var(--button-light);
       color: white;
       cursor: pointer;
       transition: background-color 0.2s ease;
     }
 
+    html[data-theme="dark"] .item .action button {
+      background-color: var(--button-dark);
+    }
+
     .item .action button:hover {
-      background-color: #4E7D5D;
+      background-color: var(--button-hover);
     }
 
     .item .action button:disabled {
@@ -84,24 +132,25 @@
       color: #4E4E4E;
       font-weight: bold;
       text-align: center;
-      padding: 1rem;
+      padding: 1.2rem;
       border-radius: 12px;
-      margin-top: 2rem;
+      margin: 2rem auto;
       font-size: 1.2rem;
       text-decoration: none;
+      max-width: 500px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     .channel-button:hover {
       background-color: #FFD480;
+      transform: scale(1.02);
     }
 
     @media (max-width: 600px) {
       .item {
         flex-direction: column;
       }
-
       .item .action {
         text-align: left;
         margin-top: 1rem;
@@ -110,20 +159,25 @@
   </style>
 </head>
 <body>
-  <header>LUKE JUALAN - Item Game</header>
+  <header>
+    LUKE JUALAN - Item Game
+    <button class="toggle-mode" onclick="toggleTheme()">🌓 Mode</button>
+  </header>
+
   <div class="container" id="item-container">
-    <p>Loading data...</p>
+    <p>Memuat data item...</p>
   </div>
 
   <a href="https://whatsapp.com/channel/0029Vb6ZF0kFHWqARkrzlc0M" target="_blank" class="channel-button">
-    📢 Lihat Testimoni & Channel Resmi
+    📢 Lihat Testimoni & Channel WA Resmi
   </a>
 
   <script>
-    const sheetID = '1X6vOXXXcNCbudDw5ZP5rcZGpgcq_OZIo-GsYRebrwx4'; // Ganti dengan ID kamu
+    const sheetID = '1X6vOXXXcNCbudDw5ZP5rcZGpgcq_OZIo-GsYRebrwx4';
     const sheetName = 'Sheet1';
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
     const container = document.getElementById('item-container');
+    let lastDataHash = '';
 
     async function fetchData() {
       try {
@@ -132,6 +186,10 @@
         const json = JSON.parse(text.substr(47).slice(0, -2));
         const rows = json.table.rows;
 
+        const currentDataHash = JSON.stringify(rows);
+        if (currentDataHash === lastDataHash) return; // Tidak ada perubahan
+
+        lastDataHash = currentDataHash;
         container.innerHTML = '';
 
         rows.forEach(row => {
@@ -139,9 +197,13 @@
           const harga = row.c[1]?.v || 0;
           const stok = row.c[2]?.v || 0;
           const pesan = encodeURIComponent(`Halo saya mau beli ${nama} R${harga / 1000}`);
-
           const item = document.createElement('div');
           item.className = 'item';
+
+          const btnHTML = stok == 0
+            ? `<button disabled>Stok Habis</button>`
+            : `<button onclick="window.open('https://wa.me/6281368845198?text=${pesan}', '_blank')">Order via WA</button>`;
+
           item.innerHTML = `
             <div class="info">
               <h3>${nama}</h3>
@@ -149,18 +211,32 @@
               <p>Stok: ${stok}</p>
             </div>
             <div class="action">
-              <button ${stok == 0 ? 'disabled' : ''} onclick="window.open('https://wa.me/6281368845198?text=${pesan}', '_blank')">Order via WA</button>
+              ${btnHTML}
             </div>
           `;
           container.appendChild(item);
         });
       } catch (err) {
-        container.innerHTML = '<p>Gagal memuat data. Periksa koneksi internet atau izin Google Sheets Anda.</p>';
+        container.innerHTML = '<p>Gagal memuat data. Cek koneksi internet atau izin Google Sheets Anda.</p>';
       }
     }
 
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    }
+
+    initTheme();
     fetchData();
-    setInterval(fetchData, 5000); // refresh tiap 5 detik
+    setInterval(fetchData, 10000); // 10 detik agar ringan dan efisien
   </script>
 </body>
 </html>
