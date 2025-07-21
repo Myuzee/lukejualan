@@ -8,12 +8,12 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #eafbe6;
-      color: #E9F5EA;
+      background: #F2F8F0; /* Soft Matcha background */
+      color: #333333; /* Teks utama */
     }
 
     header {
-      background-color: #7ecf7c;
+      background-color: #79B473; /* Matcha green */
       color: white;
       padding: 1rem;
       text-align: center;
@@ -28,15 +28,16 @@
     }
 
     .item {
-      background-color: #ffffff;
-      border: 2px solid #c2e9b7;
+      background-color: #FFFFFF;
+      border: 2px solid #CDEAC0;
       padding: 1rem;
       border-radius: 12px;
       margin-bottom: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
+      color: #333333;
     }
 
     .item .info {
@@ -62,10 +63,14 @@
       font-weight: bold;
       border: none;
       border-radius: 8px;
-      background-color: #34c759;
+      background-color: #69A17A;
       color: white;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: background-color 0.2s ease;
+    }
+
+    .item .action button:hover {
+      background-color: #4E7D5D;
     }
 
     .item .action button:disabled {
@@ -75,8 +80,8 @@
 
     .channel-button {
       display: block;
-      background-color: #ffc107;
-      color: #333;
+      background-color: #FEEBCB;
+      color: #4E4E4E;
       font-weight: bold;
       text-align: center;
       padding: 1rem;
@@ -84,7 +89,12 @@
       margin-top: 2rem;
       font-size: 1.2rem;
       text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background-color 0.3s;
+    }
+
+    .channel-button:hover {
+      background-color: #FFD480;
     }
 
     @media (max-width: 600px) {
@@ -150,7 +160,7 @@
     }
 
     fetchData();
-    setInterval(fetchData, 5000); // refresh tiap 10 detik
+    setInterval(fetchData, 5000); // refresh tiap 5 detik
   </script>
 </body>
 </html>
